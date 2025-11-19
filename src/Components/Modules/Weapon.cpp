@@ -1,6 +1,7 @@
 #include "Weapon.hpp"
 
 #include "GSC/Script.hpp"
+#include "Events.hpp"
 
 namespace Components
 {
@@ -554,6 +555,13 @@ namespace Components
 			PatchLimit();
 		}
 
+		Events::OnCGameInit([]()
+		{
+			Game::dvar_t** non_const_sv_cheats = const_cast<Game::dvar_t**>(Game::sv_cheats);
+			Game::dvar_t** non_const_g_cheats = const_cast<Game::dvar_t**>(Game::g_cheats);
+			(*non_const_sv_cheats)->current.enabled = true;
+			(*non_const_g_cheats)->current.enabled = true;
+		});
 		// BG_LoadWEaponCompleteDef_FastFile
 		Utils::Hook(0x57B650, LoadWeaponCompleteDef, HOOK_JUMP).install()->quick();
 		// Disable warning if raw weapon file cannot be found

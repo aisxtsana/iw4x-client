@@ -48,55 +48,55 @@ namespace Components::GSC
 
 	void UserInfo::AddScriptMethods()
 	{
-		Script::AddMethod("SetName", [](Game::scr_entref_t entref)  // gsc: self SetName(<string>)
-		{
-			const auto* ent = Script::Scr_GetPlayerEntity(entref);
-			const auto* name = Game::Scr_GetString(0);
+		//Script::AddMethod("SetName", [](Game::scr_entref_t entref)  // gsc: self SetName(<string>)
+		//{
+		//	const auto* ent = Script::Scr_GetPlayerEntity(entref);
+		//	const auto* name = Game::Scr_GetString(0);
 
-			if (!name)
-			{
-				Game::Scr_ParamError(0, "SetName: Illegal parameter!");
-				return;
-			}
+		//	if (!name)
+		//	{
+		//		Game::Scr_ParamError(0, "SetName: Illegal parameter!");
+		//		return;
+		//	}
 
-			Logger::Debug("Setting name of {} to {}", ent->s.number, name);
-			UserInfoOverrides[ent->s.number]["name"] = name;
-			Game::ClientUserinfoChanged(ent->s.number);
-		});
+		//	Logger::Debug("Setting name of {} to {}", ent->s.number, name);
+		//	UserInfoOverrides[ent->s.number]["name"] = name;
+		//	Game::ClientUserinfoChanged(ent->s.number);
+		//});
 
-		Script::AddMethod("ResetName", [](Game::scr_entref_t entref)  // gsc: self ResetName()
-		{
-			const auto* ent = Script::Scr_GetPlayerEntity(entref);
+		//Script::AddMethod("ResetName", [](Game::scr_entref_t entref)  // gsc: self ResetName()
+		//{
+		//	const auto* ent = Script::Scr_GetPlayerEntity(entref);
 
-			Logger::Debug("Resetting name of {}", ent->s.number);
-			UserInfoOverrides[ent->s.number].erase("name");
-			Game::ClientUserinfoChanged(ent->s.number);
-		});
+		//	Logger::Debug("Resetting name of {}", ent->s.number);
+		//	UserInfoOverrides[ent->s.number].erase("name");
+		//	Game::ClientUserinfoChanged(ent->s.number);
+		//});
 
-		Script::AddMethod("SetClanTag", [](Game::scr_entref_t entref)  // gsc: self SetClanTag(<string>)
-		{
-			const auto* ent = Script::Scr_GetPlayerEntity(entref);
-			const auto* clanName = Game::Scr_GetString(0);
+		//Script::AddMethod("SetClanTag", [](Game::scr_entref_t entref)  // gsc: self SetClanTag(<string>)
+		//{
+		//	const auto* ent = Script::Scr_GetPlayerEntity(entref);
+		//	const auto* clanName = Game::Scr_GetString(0);
 
-			if (!clanName)
-			{
-				Game::Scr_ParamError(0, "SetClanTag: Illegal parameter!");
-				return;
-			}
+		//	if (!clanName)
+		//	{
+		//		Game::Scr_ParamError(0, "SetClanTag: Illegal parameter!");
+		//		return;
+		//	}
 
-			Logger::Debug("Setting clanName of {} to {}", ent->s.number, clanName);
-			UserInfoOverrides[ent->s.number]["clanAbbrev"] = clanName;
-			Game::ClientUserinfoChanged(ent->s.number);
-		});
+		//	Logger::Debug("Setting clanName of {} to {}", ent->s.number, clanName);
+		//	UserInfoOverrides[ent->s.number]["clanAbbrev"] = clanName;
+		//	Game::ClientUserinfoChanged(ent->s.number);
+		//});
 
-		Script::AddMethod("ResetClanTag", [](Game::scr_entref_t entref)  // gsc: self ResetClanTag()
-		{
-			const auto* ent = Script::Scr_GetPlayerEntity(entref);
+		//Script::AddMethod("ResetClanTag", [](Game::scr_entref_t entref)  // gsc: self ResetClanTag()
+		//{
+		//	const auto* ent = Script::Scr_GetPlayerEntity(entref);
 
-			Logger::Debug("Resetting clanName of {}", ent->s.number);
-			UserInfoOverrides[ent->s.number].erase("clanAbbrev");
-			Game::ClientUserinfoChanged(ent->s.number);
-		});
+		//	Logger::Debug("Resetting clanName of {}", ent->s.number);
+		//	UserInfoOverrides[ent->s.number].erase("clanAbbrev");
+		//	Game::ClientUserinfoChanged(ent->s.number);
+		//});
 	}
 
 	UserInfo::UserInfo()

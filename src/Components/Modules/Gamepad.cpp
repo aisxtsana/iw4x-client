@@ -1643,7 +1643,7 @@ namespace Components
 	{
 		gpad_enabled = Dvar::Register<bool>("gpad_enabled", false, Game::DVAR_ARCHIVE, "Game pad enabled");
 		gpad_present = Dvar::Register<bool>("gpad_present", false, Game::DVAR_ROM, "Game pad present");
-		gpad_in_use = Dvar::Register<bool>("gpad_in_use", false, Game::DVAR_ROM, "A game pad is in use");
+		gpad_in_use = Dvar::Register<bool>("gpad_in_use", true, Game::DVAR_ROM, "A game pad is in use");
 		gpad_style = Dvar::Register<bool>("gpad_style", false, Game::DVAR_ARCHIVE, "Switch between Xbox and PS HUD");
 		gpad_sticksConfig = Dvar::Register<const char*>("gpad_sticksConfig", "", Game::DVAR_ARCHIVE, "Game pad stick configuration");
 		gpad_buttonConfig = Dvar::Register<const char*>("gpad_buttonConfig", "", Game::DVAR_ARCHIVE, "Game pad button configuration");
@@ -1715,8 +1715,8 @@ namespace Components
 		(*keys)[0] = -1;
 		(*keys)[1] = -1;
 
-		if (gamePads[localClientNum].inUse)
-		{
+		//if (gamePads[localClientNum].inUse)
+		//{
 			const auto gamePadCmd = GetGamePadCommand(cmd);
 			for (auto keyNum = 0; keyNum < Game::K_LAST_KEY; keyNum++)
 			{
@@ -1735,8 +1735,8 @@ namespace Components
 					}
 				}
 			}
-		}
-		else
+		//}
+		/*else
 		{
 			for (auto keyNum = 0; keyNum < Game::K_LAST_KEY; keyNum++)
 			{
@@ -1755,7 +1755,7 @@ namespace Components
 					}
 				}
 			}
-		}
+		}*/
 
 		return keyCount;
 	}
@@ -1795,7 +1795,7 @@ namespace Components
 	{
 		// A keyboard key has been pressed. Mark controller as unused.
 		gamePads[localClientNum].inUse = false;
-		gpad_in_use.setRaw(false);
+		gpad_in_use.setRaw(true);
 
 		// Call original function
 		Utils::Hook::Call<void(int, int, int, unsigned)>(0x4F6480)(localClientNum, key, down, time);
@@ -1811,7 +1811,7 @@ namespace Components
 		if (dx != 0 || dy != 0)
 		{
 			gamePads[0].inUse = false;
-			gpad_in_use.setRaw(false);
+			gpad_in_use.setRaw(true);
 		}
 	}
 

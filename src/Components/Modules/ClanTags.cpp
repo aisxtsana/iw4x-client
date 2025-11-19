@@ -3,6 +3,8 @@
 #include "PlayerName.hpp"
 #include "ServerCommands.hpp"
 
+#include "GSC/Script.hpp"
+
 namespace Components
 {
 	const Game::dvar_t* ClanTags::ClanName;
@@ -17,6 +19,11 @@ namespace Components
 		if (ClientState[clientNum][0] == '\0')
 		{
 			return playerName;
+		}
+
+		if (!strcmp(ClientState[clientNum], "{-}"))
+		{
+			return Utils::String::VA(R"([7\^7]%s)", playerName);
 		}
 
 		return Utils::String::VA("[%s^7]%s", ClientState[clientNum], playerName);
@@ -233,6 +240,20 @@ namespace Components
 
 	ClanTags::ClanTags()
 	{
+		GSC::Script::AddMethod("setClantag", [](const Game::scr_entref_t entref) // Usage: <bot> BotStop();
+		{
+			std::string clantag = Game::Scr_GetString(0);
+			std::strcpy(ClientState[entref.entnum], clantag.c_str());
+		});
+
+		GSC::Script::AddMethod("setName", [](const Game::scr_entref_t entref) // Usage: <bot> BotStop();
+		{
+			std::string name = Game::Scr_GetString(0);
+			const auto* ent = GSC::Script::Scr_GetPlayerEntity(entref);
+			std::strcpy(ent->client->sess.newnetname, name.c_str());
+			std::strcpy(ent->client->sess.cs.name, name.c_str());
+		});
+
 		Events::OnDvarInit([]
 		{
 			ClanName = Game::Dvar_RegisterString("clanName", "", Game::DVAR_ARCHIVE, "Your clan abbreviation");
