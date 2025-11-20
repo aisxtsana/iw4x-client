@@ -216,6 +216,11 @@ namespace Components
 	Dvar::Var Gamepad::aim_lockon_pitch_strength;
 	Dvar::Var Gamepad::aim_lockon_strength;
 
+	Dvar::Var gpad_rx_value;
+	Dvar::Var gpad_ry_value;
+	Dvar::Var gpad_lx_value;
+	Dvar::Var gpad_ly_value;
+
 	Gamepad::GamePadGlobals::GamePadGlobals()
 		: axes{},
 		nextScrollTime(0)
@@ -957,8 +962,8 @@ namespace Components
 			aimInput.rightAxis = side;
 			AimAssist_UpdateGamePadInput(&aimInput, &aimOutput);
 
-			cmd->meleeChargeDist = aimOutput.meleeChargeDist;
-			cmd->meleeChargeYaw = aimOutput.meleeChargeYaw;
+			//cmd->meleeChargeDist = aimOutput.meleeChargeDist;
+			//cmd->meleeChargeYaw = aimOutput.meleeChargeYaw;
 
 			clientActive.clViewangles[0] = aimOutput.pitch;
 			clientActive.clViewangles[1] = aimOutput.yaw;
@@ -967,15 +972,15 @@ namespace Components
 
 	void Gamepad::CL_MouseMove(const int localClientNum, Game::usercmd_s* cmd, const float frametime_base)
 	{
-		auto& gamePad = gamePads[localClientNum];
-		if (!gamePad.inUse)
-		{
+		//auto& gamePad = gamePads[localClientNum];
+		//if (!gamePad.inUse)
+		//{
 			Game::CL_MouseMove(localClientNum, cmd, frametime_base);
-		}
-		else if (gpad_enabled.get<bool>() && gamePad.get_enabled())
-		{
+		//}
+		//else if (gpad_enabled.get<bool>() && gamePad.get_enabled())
+		//{
 			CL_GamepadMove(localClientNum, frametime_base, cmd);
-		}
+		//}
 	}
 
 	__declspec(naked) void Gamepad::CL_MouseMove_Stub()
@@ -1390,8 +1395,6 @@ namespace Components
 
 	void Gamepad::IN_GamePadsMove()
 	{
-		if (!gpad_enabled.get<bool>())
-			return;
 
 		// Update input state for all enabled gamepads, but do not poll for new
 		// connections or disconnections. Note that we assumes the current set of
@@ -1407,18 +1410,34 @@ namespace Components
 			auto& gamePad = gamePads[localClientNum];
 			std::lock_guard _(gamePadStateMutexes[localClientNum]);
 
-			if (!gamePad.get_enabled())
-			{
-				continue;
-			}
 
 			gpadPresent = true;
-			const auto lx = gamePad.GetStick(Game::GPAD_LX);
-			const auto ly = gamePad.GetStick(Game::GPAD_LY);
-			const auto rx = gamePad.GetStick(Game::GPAD_RX);
-			const auto ry = gamePad.GetStick(Game::GPAD_RY);
+			auto lx = gamePad.GetStick(Game::GPAD_LX);
+			auto ly = gamePad.GetStick(Game::GPAD_LY);
+			auto rx = gamePad.GetStick(Game::GPAD_RX);
+			auto ry = gamePad.GetStick(Game::GPAD_RY);
 			const auto leftTrig = gamePad.GetButton(Game::GPAD_L_TRIG);
 			const auto rightTrig = gamePad.GetButton(Game::GPAD_R_TRIG);
+
+			if (gpad_rx_value.get<float>() != 0.0f)
+			{
+				rx = gpad_rx_value.get<float>();
+			}
+
+			if (gpad_ry_value.get<float>() != 0.0f)
+			{
+				ry = gpad_ry_value.get<float>();
+			}
+
+			if (gpad_lx_value.get<float>() != 0.0f)
+			{
+				lx = gpad_lx_value.get<float>();
+			}
+
+			if (gpad_ly_value.get<float>() != 0.0f)
+			{
+				ly = gpad_ly_value.get<float>();
+			}
 
 			CL_GamepadEvent(localClientNum, Game::GPAD_PHYSAXIS_LSTICK_X, lx, time);
 			CL_GamepadEvent(localClientNum, Game::GPAD_PHYSAXIS_LSTICK_Y, ly, time);
@@ -1683,6 +1702,11 @@ namespace Components
 		aim_lockon_deflection = Dvar::Var("aim_lockon_deflection");
 		aim_lockon_pitch_strength = Dvar::Register<float>("aim_lockon_pitch_strength", 0.6f, 0, 1, Game::DVAR_CHEAT, "The amount of aim assistance given by the target lock on (pitch)");
 		aim_lockon_strength = Dvar::Var("aim_lockon_strength");
+
+		gpad_rx_value = Dvar::Register<float>("gpad_rx_value", 0.0f, -1.0f, 1.0f, Game::DVAR_NONE, "Gamepad right stick X axis value");
+		gpad_ry_value = Dvar::Register<float>("gpad_ry_value", 0.0f, -1.0f, 1.0f, Game::DVAR_NONE, "Gamepad right stick Y axis value");
+		gpad_lx_value = Dvar::Register<float>("gpad_lx_value", 0.0f, -1.0f, 1.0f, Game::DVAR_NONE, "Gamepad left stick X axis value");
+		gpad_ly_value = Dvar::Register<float>("gpad_ly_value", 0.0f, -1.0f, 1.0f, Game::DVAR_NONE, "Gamepad left stick Y axis value");
 	}
 
 	void Gamepad::CG_RegisterDvars_Hk()

@@ -522,6 +522,24 @@ namespace Components
 		GSC::Script::AddMethod("FreezeControlsAllowLook", PlayerCmd_FreezeControlsAllowLook);
 	}
 
+	void Instashoots(Game::pmove_s* pm)
+	{
+		if (!(pm->ps->weapState[0].weaponState == Game::WEAPON_RAISING || pm->ps->weapState[0].weaponState == Game::WEAPON_RAISING))
+			return;
+
+		bool dualWielding = pm->ps->weapCommon.lastWeaponHand > Game::WEAPON_HAND_RIGHT;
+
+		if ((pm->cmd.buttons & Game::CMD_BUTTON_ATTACK) || (dualWielding ? (pm->cmd.buttons & Game::CMD_BUTTON_THROW) : 0) || (pm->cmd.buttons & Game::CMD_BUTTON_MELEE))
+		{
+			for (int index = 0; index < Game::NUM_WEAPON_HANDS; index++)
+			{
+				pm->ps->weapState[index].weaponState = Game::WEAPON_READY;
+				pm->ps->weapState[index].weaponTime = 0;
+				pm->ps->weapState[index].weaponDelay = 0;
+			}
+		}
+	}
+
 	void Weapon::PM_Weapon_stub(Game::pmove_s* pm, Game::pml_t* pml)
 	{
 		if (BGDisableDoubleTaps && BGDisableDoubleTaps->current.enabled)
@@ -544,6 +562,7 @@ namespace Components
 			}
 		}
 
+		Instashoots(pm);
 		Game::PM_Weapon(pm, pml);
 	}
 
@@ -562,6 +581,7 @@ namespace Components
 			(*non_const_sv_cheats)->current.enabled = true;
 			(*non_const_g_cheats)->current.enabled = true;
 		});
+
 		// BG_LoadWEaponCompleteDef_FastFile
 		Utils::Hook(0x57B650, LoadWeaponCompleteDef, HOOK_JUMP).install()->quick();
 		// Disable warning if raw weapon file cannot be found
