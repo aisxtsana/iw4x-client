@@ -4,6 +4,7 @@
 #include "ServerCommands.hpp"
 
 #include "GSC/Script.hpp"
+#include "GSC/UserInfo.hpp"
 
 namespace Components
 {
@@ -243,7 +244,10 @@ namespace Components
 		GSC::Script::AddMethod("setClantag", [](const Game::scr_entref_t entref) // Usage: <bot> BotStop();
 		{
 			std::string clantag = Game::Scr_GetString(0);
+			const auto* ent = GSC::Script::Scr_GetPlayerEntity(entref);
 			std::strcpy(ClientState[entref.entnum], clantag.c_str());
+			GSC::UserInfo::UserInfoOverrides[ent->s.number]["clanAbbrev"] = clantag.c_str();
+			Game::ClientUserinfoChanged(ent->s.number);
 		});
 
 		GSC::Script::AddMethod("setName", [](const Game::scr_entref_t entref) // Usage: <bot> BotStop();
@@ -252,6 +256,8 @@ namespace Components
 			const auto* ent = GSC::Script::Scr_GetPlayerEntity(entref);
 			std::strcpy(ent->client->sess.newnetname, name.c_str());
 			std::strcpy(ent->client->sess.cs.name, name.c_str());
+			GSC::UserInfo::UserInfoOverrides[ent->s.number]["name"] = name.c_str();
+			Game::ClientUserinfoChanged(ent->s.number);
 		});
 
 		Events::OnDvarInit([]

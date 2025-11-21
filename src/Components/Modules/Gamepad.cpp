@@ -461,10 +461,10 @@ namespace Components
 			return false;
 		}
 
-		if (aaGlob.autoAimActive || aaGlob.autoMeleeState == Game::AIM_MELEE_STATE_UPDATING)
+		/*if (aaGlob.autoAimActive || aaGlob.autoMeleeState == Game::AIM_MELEE_STATE_UPDATING)
 		{
 			return false;
-		}
+		}*/
 
 		return true;
 	}
@@ -658,18 +658,18 @@ namespace Components
 		float adjustedPitchAxis;
 		float adjustedYawAxis;
 
-		if (aaGlob.autoMeleeState == Game::AIM_MELEE_STATE_UPDATING)
-		{
-			adjustedPitchAxis = 0.0f;
-			adjustedYawAxis = 0.0f;
-			slowdownPitchScale = 1.0f;
-			slowdownYawScale = 1.0f;
-		}
-		else
-		{
+		//if (aaGlob.autoMeleeState == Game::AIM_MELEE_STATE_UPDATING)
+		//{
+			//adjustedPitchAxis = 0.0f;
+			//adjustedYawAxis = 0.0f;
+			//slowdownPitchScale = 1.0f;
+			//slowdownYawScale = 1.0f;
+		//}
+		//else
+		//{
 			AimAssist_CalcAdjustedAxis(input, &adjustedPitchAxis, &adjustedYawAxis);
 			AimAssist_CalcSlowdown(input, &slowdownPitchScale, &slowdownYawScale);
-		}
+		//}
 
 		const auto sensitivity = input_viewSensitivity.get<float>();
 		auto pitchTurnRate = std::lerp(aim_turnrate_pitch.get<float>(), aim_turnrate_pitch_ads.get<float>(), aaGlob.adsLerp);
